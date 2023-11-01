@@ -1,16 +1,36 @@
 {
   "name": "amzn_prdct_reviews_scraper",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "App scrapes through product reviews for provided product URL and displays the sentiment",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Anjana Ranjan",
+  "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.1485.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.1",
     "puppeteer": "^21.4.1",
     "sentiment": "^5.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascir/amazon-reviews-sentiment-analysis.git"
+  },
+  "keywords": [
+    "web",
+    "scraper",
+    "sentiment",
+    "analysis"
+  ],
+  "bugs": {
+    "url": "https://github.com/ascir/amazon-reviews-sentiment-analysis/issues"
+  },
+  "homepage": "https://github.com/ascir/amazon-reviews-sentiment-analysis#readme"
 }

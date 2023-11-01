@@ -1,0 +1,26 @@
+#result {
+    margin-top: 20px;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+}
+
+.product-image {
+    max-width: 100px;
+    margin-right: 20px;
+}
+
+.sentiment-score {
+    font-size: 24px;
+    margin-left: 20px;
+}
+
+.sentiment-emoji {
+    font-size: 68px;
+}
+
+.table {
+    margin-top: 20px;
+}

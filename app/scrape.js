@@ -3,29 +3,48 @@ const Sentiment = require('sentiment');
 
 const sentiment = new Sentiment();
 
-async function scrapeAmazonProductReviews(url) {
-    if (!url) {
-        console.log("URL is required");
-        return;
+async function scrapeAmazonProductReviews(productUrl) {
+    // Check if URL is provided
+    if (!productUrl) {
+        return "URL not provided!";
     }
 
-    // Trim the URL to get the base URL of the product
-    const shortUrl = productUrl.split('/ref')[0] + '/';
-    const reviewUrl = shortUrl.replace('/dp/', '/product-reviews/') + 'ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews';
+    // Check if the URL is valid
+    try {
+        new URL(productUrl);
+    } catch (error) {
+        return "Invalid URL!";
+    }
 
+    // Check if the URL contains amazon.com
+    if (!productUrl.includes('amazon.com')) {
+        return "Sorry, we only accept links to products on Amazon";
+    }
+    console.log("PRODUCT URL INSIDE FN: ", productUrl);
+
+
+    // Trim the URL to get the base URL of the product
+    productUrlParsed = `"${productUrl}"`
+
+    const shortUrl = productUrl.split('/ref')[0] + '/';
+
+    const reviewUrl = shortUrl.replace('/dp/', '/product-reviews/') + 'ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews';
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    
+
     // Go to the product page to extract product details
     await page.goto(shortUrl);
 
-    // Extract product title and image URL
+    // Extract product title, image URL, and rating
     const productDetails = await page.evaluate(() => {
         const title = document.querySelector('#productTitle') ? document.querySelector('#productTitle').innerText.trim() : null;
         const imageUrl = document.querySelector('#imgTagWrapperId img') ? document.querySelector('#imgTagWrapperId img').src : null;
-        return { title, imageUrl };
+        const ratingElement = document.querySelector('.a-size-base.a-color-base'); // Updated selector
+        const rating = ratingElement ? ratingElement.innerText.trim() : null;
+        return { title, imageUrl, rating };
     });
+
 
     // Go to the reviews page
     await page.goto(reviewUrl, { waitUntil: 'networkidle0' });
@@ -94,9 +113,10 @@ async function scrapeAmazonProductReviews(url) {
 
     // Return the overall object
     return {
-        productUrl: url, 
+        productUrl: productUrl,
         productTitle: productDetails.title,
         productImageUrl: productDetails.imageUrl,
+        productRating: productDetails.rating,
         averageScore,
         averageComparative,
         mostCommonPositiveWords: sortedPositiveWords,
@@ -106,10 +126,10 @@ async function scrapeAmazonProductReviews(url) {
 }
 
 // Test function
-const productUrl = 'https://www.amazon.com.au/Apple-iPhone-SIM-Free-Smartphone-Renewed/dp/B07T3BM4H1/ref=cm_cr_arp_d_product_top?ie=UTF8';
+// const productUrl = 'https://www.amazon.com.au/Apple-iPhone-SIM-Free-Smartphone-Renewed/dp/B07T3BM4H1/ref=cm_cr_arp_d_product_top?ie=UTF8';
 // scrapeAmazonProductReviews(productUrl).then(sentimentResults => {
 //     console.log(sentimentResults);
 // });
-scrapeAmazonProductReviews(productUrl);
+// scrapeAmazonProductReviews(productUrl);
 
 module.exports = scrapeAmazonProductReviews;
