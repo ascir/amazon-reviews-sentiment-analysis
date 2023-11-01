@@ -26,8 +26,8 @@
 }
 
 .navbar-brand {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 800;
   }
 
   .custom-navbar {
@@ -40,6 +40,7 @@
     color: white;
 }
 
-h4 {
-    font-family: 'Poppins', sans-serif;
+h5 {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 570;
   }
