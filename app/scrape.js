@@ -20,7 +20,6 @@ async function scrapeAmazonProductReviews(productUrl) {
     if (!productUrl.includes('amazon.com')) {
         return "Sorry, we only accept links to products on Amazon";
     }
-    console.log("PRODUCT URL INSIDE FN: ", productUrl);
 
 
     // Trim the URL to get the base URL of the product

@@ -3,17 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon Product Sentiment Analysis</title>
+    <title>Amazon Review Sentiment Analysis</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg custom-navbar">
+        <a class="navbar-brand" href="#">
+          <img src="/images/logo.png" width="60" height="60" class="d-inline-block align-top" alt="">
+          AmazeInsight
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <!-- Add your navbar items here -->
+        </div>
+      </nav>
     <div class="container">
-        <h1 class="text-center mt-5">Amazon Product Sentiment Analysis</h1>
+        <h5 class="text-center mt-5">Simply enter the link to an Amazon product to see what buyers think about it</h5>
         <div class="input-group mb-3 mt-5">
             <input type="text" id="productUrl" class="form-control" placeholder="Enter Amazon Product URL">
             <div class="input-group-append">
-                <button class="btn btn-primary" onclick="getProductSentiment()">Get Sentiment from Product Review</button>
+                <button class="btn btn-primary" onclick="getProductSentiment()">Get Sentiment</button>
             </div>
         </div>
         <div id="result"></div>

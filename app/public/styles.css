@@ -24,3 +24,22 @@
 .table {
     margin-top: 20px;
 }
+
+.navbar-brand {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+  }
+
+  .custom-navbar {
+    background-color: #131a3b;
+}
+
+
+.custom-navbar .navbar-brand {
+    font-size: 42px;
+    color: white;
+}
+
+h4 {
+    font-family: 'Poppins', sans-serif;
+  }
