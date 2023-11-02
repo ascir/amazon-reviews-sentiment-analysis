@@ -2,7 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 
-const scrapeAmazonProductReviews = require('./scrape');
+const { scrapeAmazonProductReviews, getReviewsFromS3 }  = require('./backendFunctions');
 
 
 const app = express();
@@ -27,6 +27,10 @@ app.get('/get-product-sentiment', async (req, res) => {
     if (!productUrl.includes('amazon.com')) {
         return res.status(400).json({ error: 'Sorry we only accept links to products on Amazon' });
     }
+
+    if (!productUrl.includes('/dp/')) {
+        return res.status(400).json({ error: 'URL provided doesn\'t redirect to an Amazon product' });
+    }
     
     try {
         const sentimentResults = await scrapeAmazonProductReviews(productUrl);
@@ -40,6 +44,23 @@ app.get('/get-product-sentiment', async (req, res) => {
         }
     } catch (error) {
         res.status(500).send({ error: error.message });
+    }
+});
+
+
+app.get('/get-reviews-from-s3', async (req, res) => {
+    const key = req.query.key; 
+
+    if (!key) {
+        return res.status(400).json({ error: 'S3 key is required' });
+    }
+
+    try {
+        const reviews = await getReviewsFromS3(key);
+        res.json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews from S3:', error);
+        res.status(500).json({ error: 'Could not retrieve reviews' });
     }
 });
 

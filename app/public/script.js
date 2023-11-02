@@ -6,6 +6,10 @@ async function getProductSentiment() {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = '';
 
+    // Store S3 key in local storage 
+    localStorage.setItem('s3Object', data.s3ObjectName);
+    console.log("S3 key stored in local storage")
+
 
     if (data.error) {
         // Display error message
@@ -52,8 +56,8 @@ async function getProductSentiment() {
         <table class="table">
             <thead>
                 <tr>
-                    <th>Most Common Positive Words</th>
-                    <th>Most Common Negative Words</th>
+                    <th>Common Positive Words</th>
+                    <th>Common Negative Words</th>
                 </tr>
             </thead>
             <tbody>
@@ -75,7 +79,7 @@ async function getProductSentiment() {
 async function getReviewsFromS3() {
     const s3ObjectKey = localStorage.getItem('s3Object');
     if (!s3ObjectKey) {
-        alert('No reviews available.');
+        alert('Sorry, no reviews available at this time.');
         return;
     }
 
@@ -84,19 +88,23 @@ async function getReviewsFromS3() {
         const response = await fetch(`/get-reviews-from-s3?key=${encodeURIComponent(s3ObjectKey)}`);
         const data = await response.json();
 
-        // Randomly select 10 reviews
-        const randomReviews = [];
-        const reviews = data.productReviews;
-        for (let i = 0; i < 10 && reviews.length > 0; i++) {
-            const randomIndex = Math.floor(Math.random() * reviews.length);
-            randomReviews.push(reviews.splice(randomIndex, 1)[0]);
+        // Get the result div and the reviews table
+        const resultDiv = document.getElementById('result');
+        let reviewsTable = document.getElementById('reviewsTable');
+
+        // If the reviews table exists, clear its content; otherwise, create a new table
+        if (reviewsTable) {
+            reviewsTable.innerHTML = '';
+        } else {
+            reviewsTable = document.createElement('table');
+            reviewsTable.id = 'reviewsTable';
+            reviewsTable.className = 'table table-striped';
+            resultDiv.appendChild(reviewsTable);
         }
 
-        // Create a table to display the random reviews
-        const reviewsTable = document.createElement('table');
-        reviewsTable.className = 'table table-striped';
+        // Create a table body to display the random reviews
         const tableBody = document.createElement('tbody');
-        randomReviews.forEach((review, index) => {
+        data.forEach((review, index) => {
             const row = document.createElement('tr');
             const cell = document.createElement('td');
             cell.innerText = `${index + 1}. ${review}`;
@@ -104,9 +112,6 @@ async function getReviewsFromS3() {
             tableBody.appendChild(row);
         });
         reviewsTable.appendChild(tableBody);
-
-        const resultDiv = document.getElementById('result');
-        resultDiv.appendChild(reviewsTable);
     } catch (error) {
         console.error('Error fetching reviews:', error);
         alert('Failed to fetch reviews.');
@@ -116,18 +121,17 @@ async function getReviewsFromS3() {
 
 function displayRatingStars(rating) {
     const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStar;
 
     let starsHtml = '';
     for (let i = 0; i < fullStars; i++) {
         starsHtml += '⭐';
     }
-    if (halfStar) {
-        starsHtml += '⭐️';
-    }
-    for (let i = 0; i < emptyStars; i++) {
-        starsHtml += '⭐️';
-    }
+    
     return starsHtml;
 }
+
+
+
+
+
+

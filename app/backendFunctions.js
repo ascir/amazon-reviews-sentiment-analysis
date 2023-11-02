@@ -53,7 +53,7 @@ async function scrapeAmazonProductReviews(productUrl) {
     const productDetails = await page.evaluate(() => {
         const title = document.querySelector('#productTitle') ? document.querySelector('#productTitle').innerText.trim() : null;
         const imageUrl = document.querySelector('#imgTagWrapperId img') ? document.querySelector('#imgTagWrapperId img').src : null;
-        const ratingElement = document.querySelector('.a-size-base.a-color-base'); // Updated selector
+        const ratingElement = document.querySelector('.a-declarative .a-popover-trigger .a-size-base.a-color-base');
         const rating = ratingElement ? ratingElement.innerText.trim() : null;
         return { title, imageUrl, rating };
     });
@@ -134,11 +134,11 @@ async function scrapeAmazonProductReviews(productUrl) {
     // Sort and get top 5 positive and negative words
     const sortedPositiveWords = Object.entries(positiveWordFrequency).sort((a, b) => b[1] - a[1]).slice(0, 5).map(item => item[0]);
     const sortedNegativeWords = Object.entries(negativeWordFrequency).sort((a, b) => b[1] - a[1]).slice(0, 5).map(item => item[0]);
-    
-    if (allReviews.length > 0) {
-        const hash = crypto.createHash('sha256').update(productDetails.title).digest('hex');
-        const fileName = `${hash}.json`;
+    const hash = crypto.createHash('sha256').update(productDetails.title).digest('hex');
+    const fileName = `${hash}.json`;
 
+      
+    if (allReviews.length > 0) {
         const dataToSave = {
             productUrl: productUrl,
             productTitle: productDetails.title,
@@ -154,7 +154,7 @@ async function scrapeAmazonProductReviews(productUrl) {
 
         // Upload to S3
         const params = {
-            Bucket: 'S3_BUCKET_NAME',
+            Bucket: 'amazonproductreviews',
             Key: fileName,
             Body: JSON.stringify(dataToSave),
             ContentType: 'application/json'
@@ -165,8 +165,6 @@ async function scrapeAmazonProductReviews(productUrl) {
                 console.error("Error uploading to S3:", err);
             } else {
                 console.log("Successfully uploaded data to S3:", data.Location);
-                // Store the S3 object key in local storage
-                localStorage.setItem('s3Object', fileName);
             }
         });
     }
@@ -180,9 +178,36 @@ async function scrapeAmazonProductReviews(productUrl) {
         averageComparative,
         mostCommonPositiveWords: sortedPositiveWords,
         mostCommonNegativeWords: sortedNegativeWords,
-        numberOfReviewsAnalysed: allReviews.length
+        numberOfReviewsAnalysed: allReviews.length,
+        s3ObjectName: fileName
     };
 }
+
+async function getReviewsFromS3(key) {
+    const params = {
+        Bucket: 'amazonproductreviews', // Replace with your S3 bucket name
+        Key: key
+    };
+
+    try {
+        const data = await s3.getObject(params).promise();
+        const jsonData = JSON.parse(data.Body.toString());
+        const reviews = jsonData.productReviews;
+
+        // Shuffle the reviews array
+        for (let i = reviews.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [reviews[i], reviews[j]] = [reviews[j], reviews[i]];
+        }
+
+        // Return 10 random reviews
+        return reviews.slice(0, 10);
+    } catch (error) {
+        console.error('Error fetching reviews from S3:', error);
+        throw error;
+    }
+}
+
 
 // Test function
 // const productUrl = 'https://www.amazon.com.au/Apple-iPhone-SIM-Free-Smartphone-Renewed/dp/B07T3BM4H1/ref=cm_cr_arp_d_product_top?ie=UTF8';
@@ -190,5 +215,20 @@ async function scrapeAmazonProductReviews(productUrl) {
 //     console.log(sentimentResults);
 // });
 // scrapeAmazonProductReviews(productUrl);
+// async function testGetReviewsFromS3() {
+//     try {
+//         const key = 'fc6bfe6d289ec15613ea71706b78772cb4cd1a4c6bb4b24ef49b70915f343354.json'; // Replace with a valid key
+//         const reviews = await getReviewsFromS3(key);
+//         console.log('Reviews:', reviews);
+//     } catch (error) {
+//         console.error('Error:', error);
+//     }
+// }
 
-module.exports = scrapeAmazonProductReviews;
+// // Run the test function
+// testGetReviewsFromS3();
+
+module.exports = {
+    scrapeAmazonProductReviews,
+    getReviewsFromS3
+};
