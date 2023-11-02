@@ -98,41 +98,6 @@ async function scrapeAmazonProductReviews(productUrl) {
             message: "This product has no reviews yet!"
         };
     }
-    else {
-        const hash = crypto.createHash('sha256').update(productDetails.title).digest('hex');
-        const fileName = `${hash}.json`;
-
-        const dataToSave = {
-            productUrl: url,
-            productTitle: productDetails.title,
-            productImageUrl: productDetails.imageUrl,
-            productRating: productDetails.rating,
-            averageScore,
-            averageComparative,
-            mostCommonPositiveWords: sortedPositiveWords,
-            mostCommonNegativeWords: sortedNegativeWords,
-            numberOfReviewsAnalysed: allReviews.length,
-            productReviews: allReviews
-        };
-
-        // Upload to S3
-        const params = {
-            Bucket: 'S3_BUCKET_NAME',
-            Key: fileName,
-            Body: JSON.stringify(dataToSave),
-            ContentType: 'application/json'
-        };
-
-        s3.upload(params, function (err, data) {
-            if (err) {
-                console.error("Error uploading to S3:", err);
-            } else {
-                console.log("Successfully uploaded data to S3:", data.Location);
-                // Store the S3 object key in local storage
-                localStorage.setItem('s3Object', fileName);
-            }
-        });
-    }
 
     // Perform sentiment analysis on each review
     const sentimentResults = allReviews.map(review => {
@@ -169,7 +134,42 @@ async function scrapeAmazonProductReviews(productUrl) {
     // Sort and get top 5 positive and negative words
     const sortedPositiveWords = Object.entries(positiveWordFrequency).sort((a, b) => b[1] - a[1]).slice(0, 5).map(item => item[0]);
     const sortedNegativeWords = Object.entries(negativeWordFrequency).sort((a, b) => b[1] - a[1]).slice(0, 5).map(item => item[0]);
+    
+    if (allReviews.length > 0) {
+        const hash = crypto.createHash('sha256').update(productDetails.title).digest('hex');
+        const fileName = `${hash}.json`;
 
+        const dataToSave = {
+            productUrl: productUrl,
+            productTitle: productDetails.title,
+            productImageUrl: productDetails.imageUrl,
+            productRating: productDetails.rating,
+            averageScore,
+            averageComparative,
+            mostCommonPositiveWords: sortedPositiveWords,
+            mostCommonNegativeWords: sortedNegativeWords,
+            numberOfReviewsAnalysed: allReviews.length,
+            productReviews: allReviews
+        };
+
+        // Upload to S3
+        const params = {
+            Bucket: 'S3_BUCKET_NAME',
+            Key: fileName,
+            Body: JSON.stringify(dataToSave),
+            ContentType: 'application/json'
+        };
+
+        s3.upload(params, function (err, data) {
+            if (err) {
+                console.error("Error uploading to S3:", err);
+            } else {
+                console.log("Successfully uploaded data to S3:", data.Location);
+                // Store the S3 object key in local storage
+                localStorage.setItem('s3Object', fileName);
+            }
+        });
+    }
     // Return the overall object
     return {
         productUrl: productUrl,
