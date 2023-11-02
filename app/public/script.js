@@ -15,6 +15,13 @@ async function getProductSentiment() {
 
     // Hide loader
     loader.style.display = "none";
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+
+    // Store S3 key in local storage 
+    localStorage.setItem('s3Object', data.s3ObjectName);
+    console.log("S3 key stored in local storage")
+
 
     if (data.error) {
       // Display error message
@@ -137,19 +144,18 @@ async function getReviewsFromS3() {
 }
 
 function displayRatingStars(rating) {
-  const fullStars = Math.floor(rating);
-  const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-  const emptyStars = 5 - fullStars - halfStar;
+    const fullStars = Math.floor(rating);
 
-  let starsHtml = "";
-  for (let i = 0; i < fullStars; i++) {
-    starsHtml += "⭐";
-  }
-  if (halfStar) {
-    starsHtml += "⭐️";
-  }
-  for (let i = 0; i < emptyStars; i++) {
-    starsHtml += "⭐️";
-  }
-  return starsHtml;
+    let starsHtml = '';
+    for (let i = 0; i < fullStars; i++) {
+        starsHtml += '⭐';
+    }
+    
+    return starsHtml;
 }
+
+
+
+
+
+
