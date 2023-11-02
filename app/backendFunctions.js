@@ -203,7 +203,7 @@ async function getReviewsFromS3(key) {
         // Return 10 random reviews
         return reviews.slice(0, 10);
     } catch (error) {
-        console.error('Error fetching reviews from S3:', error);
+        console.log('Error fetching reviews from S3:', error);
         throw error;
     }
 }

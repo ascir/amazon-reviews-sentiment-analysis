@@ -101,47 +101,47 @@ async function getProductSentiment() {
 }
 
 async function getReviewsFromS3() {
-  const s3ObjectKey = localStorage.getItem("s3Object");
+  const s3ObjectKey = localStorage.getItem('s3Object');
   if (!s3ObjectKey) {
-    alert("No reviews available.");
-    return;
+      alert('Sorry, no reviews available at this time.');
+      return;
   }
 
   try {
-    // Fetch data from your server which will retrieve data from S3
-    const response = await fetch(
-      `/get-reviews-from-s3?key=${encodeURIComponent(s3ObjectKey)}`
-    );
-    const data = await response.json();
+      // Fetch data from your server which will retrieve data from S3
+      const response = await fetch(`/get-reviews-from-s3?key=${encodeURIComponent(s3ObjectKey)}`);
+      const data = await response.json();
 
-    // Randomly select 10 reviews
-    const randomReviews = [];
-    const reviews = data.productReviews;
-    for (let i = 0; i < 10 && reviews.length > 0; i++) {
-      const randomIndex = Math.floor(Math.random() * reviews.length);
-      randomReviews.push(reviews.splice(randomIndex, 1)[0]);
-    }
+      // Get the result div and the reviews table
+      const resultDiv = document.getElementById('result');
+      let reviewsTable = document.getElementById('reviewsTable');
 
-    // Create a table to display the random reviews
-    const reviewsTable = document.createElement("table");
-    reviewsTable.className = "table table-striped";
-    const tableBody = document.createElement("tbody");
-    randomReviews.forEach((review, index) => {
-      const row = document.createElement("tr");
-      const cell = document.createElement("td");
-      cell.innerText = `${index + 1}. ${review}`;
-      row.appendChild(cell);
-      tableBody.appendChild(row);
-    });
-    reviewsTable.appendChild(tableBody);
+      // If the reviews table exists, clear its content; otherwise, create a new table
+      if (reviewsTable) {
+          reviewsTable.innerHTML = '';
+      } else {
+          reviewsTable = document.createElement('table');
+          reviewsTable.id = 'reviewsTable';
+          reviewsTable.className = 'table table-striped';
+          resultDiv.appendChild(reviewsTable);
+      }
 
-    const resultDiv = document.getElementById("result");
-    resultDiv.appendChild(reviewsTable);
+      // Create a table body to display the random reviews
+      const tableBody = document.createElement('tbody');
+      data.forEach((review, index) => {
+          const row = document.createElement('tr');
+          const cell = document.createElement('td');
+          cell.innerText = `${index + 1}. ${review}`;
+          row.appendChild(cell);
+          tableBody.appendChild(row);
+      });
+      reviewsTable.appendChild(tableBody);
   } catch (error) {
-    console.error("Error fetching reviews:", error);
-    alert("Failed to fetch reviews.");
+      console.error('Error fetching reviews:', error);
+      alert('Failed to fetch reviews.');
   }
 }
+
 
 function displayRatingStars(rating) {
     const fullStars = Math.floor(rating);
