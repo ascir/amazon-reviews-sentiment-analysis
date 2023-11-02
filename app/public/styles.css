@@ -1,46 +1,69 @@
 #result {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .product-info {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .product-image {
-    max-width: 100px;
-    margin-right: 20px;
+  max-width: 100px;
+  margin-right: 20px;
 }
 
 .sentiment-score {
-    font-size: 24px;
-    margin-left: 20px;
+  font-size: 24px;
+  margin-left: 20px;
 }
 
 .sentiment-emoji {
-    font-size: 68px;
+  font-size: 68px;
 }
 
 .table {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .navbar-brand {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 800;
-  }
-
-  .custom-navbar {
-    background-color: #131a3b;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 800;
 }
 
+.custom-navbar {
+  background-color: #131a3b;
+}
 
 .custom-navbar .navbar-brand {
-    font-size: 42px;
-    color: white;
+  font-size: 42px;
+  color: white;
 }
 
 h5 {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 570;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 570;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -60px;
+  margin-top: -60px;
+  display: none;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
+  100% {
+    transform: rotate(360deg);
+  }
+}
