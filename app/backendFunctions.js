@@ -14,7 +14,6 @@ AWS.config.update({
 });
 
 const s3 = new AWS.S3();
-
 const sentiment = new Sentiment();
 
 async function scrapeAmazonProductReviews(productUrl) {
@@ -35,15 +34,13 @@ async function scrapeAmazonProductReviews(productUrl) {
         return "Sorry, we only accept links to products on Amazon";
     }
 
-
     // Trim the URL to get the base URL of the product
-    productUrlParsed = `"${productUrl}"`
-
     const shortUrl = productUrl.split('/ref')[0] + '/';
-
     const reviewUrl = shortUrl.replace('/dp/', '/product-reviews/') + 'ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews';
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--headless', '--disable-gpu'],
+    });
     const page = await browser.newPage();
 
     // Go to the product page to extract product details
@@ -57,7 +54,6 @@ async function scrapeAmazonProductReviews(productUrl) {
         const rating = ratingElement ? ratingElement.innerText.trim() : null;
         return { title, imageUrl, rating };
     });
-
 
     // Go to the reviews page
     await page.goto(reviewUrl, { waitUntil: 'networkidle0' });
@@ -137,7 +133,6 @@ async function scrapeAmazonProductReviews(productUrl) {
     const hash = crypto.createHash('sha256').update(productDetails.title).digest('hex');
     const fileName = `${hash}.json`;
 
-      
     if (allReviews.length > 0) {
         const dataToSave = {
             productUrl: productUrl,
@@ -168,6 +163,7 @@ async function scrapeAmazonProductReviews(productUrl) {
             }
         });
     }
+
     // Return the overall object
     return {
         productUrl: productUrl,
@@ -185,7 +181,7 @@ async function scrapeAmazonProductReviews(productUrl) {
 
 async function getReviewsFromS3(key) {
     const params = {
-        Bucket: 'amazonproductreviews', // Replace with your S3 bucket name
+        Bucket: 'amazonproductreviews',
         Key: key
     };
 
@@ -207,26 +203,6 @@ async function getReviewsFromS3(key) {
         throw error;
     }
 }
-
-
-// Test function
-// const productUrl = 'https://www.amazon.com.au/Apple-iPhone-SIM-Free-Smartphone-Renewed/dp/B07T3BM4H1/ref=cm_cr_arp_d_product_top?ie=UTF8';
-// scrapeAmazonProductReviews(productUrl).then(sentimentResults => {
-//     console.log(sentimentResults);
-// });
-// scrapeAmazonProductReviews(productUrl);
-// async function testGetReviewsFromS3() {
-//     try {
-//         const key = 'fc6bfe6d289ec15613ea71706b78772cb4cd1a4c6bb4b24ef49b70915f343354.json'; // Replace with a valid key
-//         const reviews = await getReviewsFromS3(key);
-//         console.log('Reviews:', reviews);
-//     } catch (error) {
-//         console.error('Error:', error);
-//     }
-// }
-
-// // Run the test function
-// testGetReviewsFromS3();
 
 module.exports = {
     scrapeAmazonProductReviews,

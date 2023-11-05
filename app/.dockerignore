@@ -1,0 +1,11 @@
+node_modules
+.git
+.vscode
+.idea
+.npmrc
+package-lock.json
+yarn.lock
+logs/
+.env
+.DS_Store
+*.suo
