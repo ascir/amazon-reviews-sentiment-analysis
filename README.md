@@ -4,7 +4,7 @@ AmazInsights is a powerful tool designed to scrape and analyze customer reviews 
 
 ## Description
 
-AmazInsights leverages web scraping techniques to extract reviews from Amazon product pages and uses sentiment analysis algorithms to determine the sentiment score of each review. The application runs on a Node.js server and uses Redis for caching, ensuring efficient and fast retrieval of previously analyzed data.
+AmazInsights leverages web scraping techniques (node Puppeteer package) to extract reviews from Amazon product pages and uses sentiment analysis algorithms to determine the sentiment score of each review. The application runs on a Node.js server and uses Redis for caching, ensuring efficient and fast retrieval of previously analyzed data.
 
 ## Prerequisites
 
@@ -66,6 +66,8 @@ npm start
 The application should now be running on http://localhost:3000.
 
 ### Architecture
+![architecture](https://github.com/ascir/amazon-reviews-sentiment-analysis/blob/main/app/public/images/ClusterArchitecture.png)
+
 
 ### Usage
 To analyze the sentiment of Amazon product reviews, send a GET request to the /get-product-sentiment endpoint with the product URL as a query parameter:
