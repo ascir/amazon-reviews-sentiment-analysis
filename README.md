@@ -25,29 +25,29 @@ These instructions will get you a copy of the project up and running on your loc
    git clone https://github.com/ascir/amazon-reviews-sentiment-analysis.git
    ```
 2. Navigate to the project directory:
-```sh
-
-cd amazinsights
-```
+   ```sh
+   
+   cd amazinsights/app
+   ```
 3. Build and run the application using Docker Compose:
-```sh
-
-docker-compose up --build
-```
+   ```sh
+   
+   docker-compose up --build
+   ```
 4. The application should now be running on http://localhost:8000.
 
 ### Running Locally Without Docker
 1. Clone the repository:
-
-```sh
-git clone https://github.com/your-username/amazinsights.git
-```
+   
+   ```sh
+   git clone https://github.com/your-username/amazinsights.git
+   ```
 
 2. Navigate to the project directory:
 
-```sh
-cd amazinsights
-```
+   ```sh
+   cd amazinsights/app
+   ```
 
 3. Install the dependencies:
 
@@ -59,9 +59,9 @@ npm install
 
 5. Run the application:
 
-```sh
-npm start
-```
+   ```sh
+   npm start
+   ```
 
 The application should now be running on http://localhost:3000.
 
@@ -72,9 +72,9 @@ The application should now be running on http://localhost:3000.
 ### Usage
 To analyze the sentiment of Amazon product reviews, send a GET request to the /get-product-sentiment endpoint with the product URL as a query parameter:
 
-http
+*http*
 
-GET http://localhost:8000/get-product-sentiment?productUrl=<AMAZON_PRODUCT_PAGE_URL>
+**GET** http://localhost:8000/get-product-sentiment?productUrl=<AMAZON_PRODUCT_PAGE_URL>
 The response will include the sentiment analysis of the reviews.
 
 ### Deployment
