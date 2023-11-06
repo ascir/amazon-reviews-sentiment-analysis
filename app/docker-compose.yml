@@ -2,8 +2,9 @@ version: '3'
 services:
   app:
     build: .
+    container_name: amazinsights
     ports:
-      - "8000:3000" # Maps port 8000 on the host to port 3000 in the container
+      - "8000:3000"  # Maps port 8000 on the host to port 3000 in the container
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -11,5 +12,6 @@ services:
       - redis
   redis:
     image: "redis:alpine"
+    container_name: amazinsights-redis
     expose:
-      - "6379" # Makes port 6379 available to linked services, not to the host
+      - "6379"  # Makes port 6379 available to linked services

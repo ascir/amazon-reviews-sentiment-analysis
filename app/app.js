@@ -55,8 +55,13 @@ app.get('/get-product-sentiment', async (req, res) => {
     const cacheKey = `sentiment:${productUrl}`;
 
     try {
-        // Check if the data is in Redis
-        const cachedData = await redisClient.get(cacheKey);
+        let cachedData;
+        let redisConnected = redisClient.isOpen; // Check if the Redis client is connected
+
+        if (redisConnected) {
+            // Check if the data is in Redis
+            cachedData = await redisClient.get(cacheKey);
+        }
 
         if (cachedData) {
             // If data is found in Redis cache, parse it and return
@@ -70,15 +75,28 @@ app.get('/get-product-sentiment', async (req, res) => {
                 // If the result is a string, it's an error message
                 res.status(400).send(sentimentResults);
             } else {
-                // Save the scraped data in Redis with an expiration time of 1 hour
-                await redisClient.setEx(cacheKey, 3600, JSON.stringify(sentimentResults));
+                if (redisConnected) {
+                    // Save the scraped data in Redis with an expiration time of 1 hour
+                    await redisClient.setEx(cacheKey, 3600, JSON.stringify(sentimentResults));
+                } else {
+                    // Alert the user that Redis is not connected and data is not cached
+                    console.warn('Redis is not connected. Data is not being cached.');
+                }
                 res.send(sentimentResults);
             }
         }
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        if (error.code === 'ECONNREFUSED') {
+            // If the error is because Redis connection is refused, log the error and proceed
+            console.error('Redis connection refused. Proceeding without caching.');
+            const sentimentResults = await scrapeAmazonProductReviews(productUrl);
+            res.send(sentimentResults);
+        } else {
+            res.status(500).send({ error: error.message });
+        }
     }
 });
+
 
 
 app.get('/get-reviews-from-s3', async (req, res) => {
